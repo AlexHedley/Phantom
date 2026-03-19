@@ -1,0 +1,39 @@
+@{
+  string description = Document.WithoutSettings().GetString("Lead") ?? Document.WithoutSettings().GetString(WebKeys.Description);
+  string title = Document.GetString("Title") ?? Document.GetString("SiteTitle");
+  bool isPost = Document.GetBool("IsPost") && !Document.GetBool("IsPostArchive");
+}
+@if (!string.IsNullOrEmpty(title) || !string.IsNullOrEmpty(description) || isPost)
+{
+  <header>
+    @if (!string.IsNullOrEmpty(title))
+    {
+      <h1>
+        @title
+        @if (Document.GetInt(Keys.Index) > 1)
+        {
+          <small>(Page @Document.GetString(Keys.Index))</small>
+        }
+      </h1>
+    }
+    @if (!string.IsNullOrEmpty(description))
+    {
+      <p>@description</p>
+    }
+    @if (isPost)
+    {
+      <p><em>Published on @Document.GetDateTime(WebKeys.Published).ToLongDateString(Context)</em></p>
+      @if (Document.ContainsKey("Tags"))
+      {
+        <ul class="actions small">
+          @foreach (IDocument tag in Document.GetList<string>("Tags")
+            .Select(x => Outputs["tags/index.html"].First().GetChildren().FirstOrDefault(y => y.GetTitle().Equals(x, StringComparison.OrdinalIgnoreCase)))
+            .Where(x => x != null))
+          {
+            <li><a href="@Context.GetLink(tag)" class="button small">@tag.GetTitle()</a></li>
+          }
+        </ul>
+      }
+    }
+  </header>
+}

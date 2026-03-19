@@ -1,0 +1,42 @@
+ShowInNavbar: => GetInt("Index") == 0
+Order: 100
+Title: Tags
+ArchiveSources: => GetString("PostSources")
+ArchiveFilter: => GetBool("IsPost")
+ArchiveKey: Tags
+ArchiveKeyComparer: => StringComparer.OrdinalIgnoreCase.ToConvertingEqualityComparer()
+ArchiveDestination: >
+  => GetInt("Index") <= 1 ? $"tags/{NormalizedPath.OptimizeFileName(GetString("GroupKey"))}/index.html" : $"tags/{NormalizedPath.OptimizeFileName(GetString("GroupKey"))}/{GetInt("Index")}.html"
+ArchivePageSize: 10
+ArchiveOrderKey: Published
+ArchiveOrderDescending: true
+ArchiveTitle: => GetString("GroupKey")
+---
+@if (Document.ContainsKey(Keys.GroupKey))
+{
+  <div class="row">
+    <div class="8u 12u$(medium)">
+      @Html.Partial("/_posts.cshtml", Document)
+    </div>
+    <div class="4u 12u$(medium)">
+      <ul class="actions small">
+        @foreach (IDocument tag in OutputPages.Get("tags/index.html").GetChildren().OrderByDescending(x => x.GetChildren().Count()))
+        {
+          string buttonStyle = Document.GetString(Keys.GroupKey).Equals(tag.GetTitle(), StringComparison.OrdinalIgnoreCase) ? "special" : string.Empty;
+          string postCount = tag.GetChildren().Count().ToString();
+          <li><a href="@Context.GetLink(tag)" class="button small @buttonStyle">@tag.GetTitle() (@postCount)</a></li>
+        }
+      </ul>
+    </div>
+  </div>
+}
+else
+{
+  <ul class="actions small">
+    @foreach (IDocument tag in Document.GetChildren().OrderByDescending(x => x.GetChildren().Count()))
+    {
+      string postCount = tag.GetChildren().Count().ToString();
+      <li><a role="button" href="@Context.GetLink(tag)" class="button small">@tag.GetTitle() (@postCount)</a></li>
+    }
+  </ul>
+}
