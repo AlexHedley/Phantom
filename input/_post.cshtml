@@ -1,0 +1,19 @@
+@model IDocument
+
+@{
+  string excerpt = Model.GetString(Keys.Excerpt);
+}
+
+<div>
+  <h2>@Html.DocumentLink(Model)</h2>
+  @if (Model.ContainsKey("Lead"))
+  {
+    <h4>@Model.GetString("Lead")</h4>
+  }
+  <p><em>Posted on @Model.GetDateTime(WebKeys.Published).ToLongDateString(Context)</em></p>
+  @if (!string.IsNullOrEmpty(excerpt))
+  {
+    @Html.Raw(excerpt)
+    <p><a href="@Context.GetLink(Model)">Read more...</a></p>
+  }
+</div>

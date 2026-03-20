@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--
+  Phantom by HTML5 UP
+  html5up.net | @ajlkn
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+
+<head>
+  <title>@Document.GetString("PageTitle")</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  @if (Document.ContainsKey(WebKeys.Description))
+  {
+    <meta name="description" content="@Document.GetString(WebKeys.Description)">
+  }
+  @if (Document.ContainsKey(WebKeys.Author))
+  {
+    <meta name="author" content="@Document.GetString(WebKeys.Author)">
+  }
+
+  <link rel="canonical" href='@(Document.GetString("Canonical") ?? Document.GetLink(true))'>
+
+  @{
+    @foreach (IDocument rssFeed in Outputs["**/*.rss"])
+    {
+      <link type="application/rss+xml" rel="alternate" title="@rssFeed.GetString(WebKeys.Title)" href="@rssFeed.GetLink()" />
+    }
+    @foreach (IDocument atomFeed in Outputs["**/*.atom"])
+    {
+      <link type="application/atom+xml" rel="alternate" title="@atomFeed.GetString(WebKeys.Title)" href="@atomFeed.GetLink()" />
+    }
+  }
+
+  <meta name="application-name" content='@Document.GetString("SiteTitle")' />
+  <meta name="msapplication-tooltip" content='@Document.GetString("SiteTitle")' />
+  <meta name="msapplication-starturl" content='@Context.GetLink("/")' />
+
+  @* TODO: More social graph meta tags *@
+  <meta property="og:title" content='@Document.GetString("PageTitle")' />
+  @if (Document.ContainsKey(WebKeys.Image))
+  {
+    <meta property="og:image" content='@Context.GetLink(Document.GetString(WebKeys.Image))' />
+  }
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content='@Document.GetLink(true)' />
+
+  <!--[if lte IE 8]><script src='@Context.GetLink("/assets/js/ie/html5shiv.js")'></script><![endif]-->
+  <link rel="stylesheet" href='@Context.GetLink("/assets/css/font-awesome.min.css")' />
+  <link rel="stylesheet" href='@Context.GetLink("/assets/css/main.css")' />
+  <!--[if lte IE 9]><link rel="stylesheet" href='@Context.GetLink("/assets/css/ie9.css")' /><![endif]-->
+  <!--[if lte IE 8]><link rel="stylesheet" href='@Context.GetLink("/assets/css/ie8.css")' /><![endif]-->
+  <link rel="stylesheet" href='@Context.GetLink("/assets/css/highlight.css")' />
+  <link rel="stylesheet" href='@Context.GetLink("/assets/css/override.css")' />
+
+  <link rel="icon" href='@Context.GetLink("/favicon.ico")'>
+
+  @Html.Partial("_head")
+
+  @RenderSection("Head", false)
+</head>
+
+<body>
+  <!-- Wrapper -->
+  <div id="wrapper">
+
+    <!-- Navigation / Header -->
+    @RenderSectionOrPartial("Navigation", "_navigation")
+
+    <!-- Main -->
+    <div id="main">
+      <div class="inner">
+        <!-- Page Header -->
+        @RenderSectionOrPartial("Header", "_header")
+
+        @if (Document.ContainsKey(WebKeys.Image))
+        {
+          <span class="image main"><img src='@Context.GetLink(Document.GetString(WebKeys.Image))' alt="" /></span>
+        }
+
+        <!-- Content -->
+        <div id="content">
+          @RenderBody()
+          @{
+            bool isPost = Document.GetBool("IsPost") && !Document.GetBool("IsPostArchive");
+            bool isPage = Document.GetBool("IsPage");
+          }
+          @if (isPost)
+          {
+            @Html.Partial("_post-after-content")
+          }
+          else if (isPage)
+          {
+            @Html.Partial("_page-after-content")
+          }
+          @Html.Partial("_common-after-content")
+        </div>
+
+        @if (isPost)
+        {
+          @Html.Partial("_post-comments")
+        }
+      </div>
+    </div>
+
+    <!-- Footer -->
+    @RenderSectionOrPartial("Footer", "_footer")
+
+  </div>
+
+  <!-- Scripts -->
+  <script src='@Context.GetLink("/assets/js/jquery.min.js")'></script>
+  <script src='@Context.GetLink("/assets/js/skel.min.js")'></script>
+  <script src='@Context.GetLink("/assets/js/util.js")'></script>
+  <!--[if lte IE 8]><script src='@Context.GetLink("/assets/js/ie/respond.min.js")'></script><![endif]-->
+  <script src='@Context.GetLink("/assets/js/main.js")'></script>
+  <script src='@Context.GetLink("/assets/js/highlight.pack.js")'></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  @Html.Partial("_scripts")
+  @RenderSection("Scripts", false)
+</body>
+
+</html>

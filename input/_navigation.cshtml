@@ -1,0 +1,28 @@
+<!-- Header -->
+<header id="header">
+  <div class="inner">
+    <!-- Logo -->
+    <a href='@Context.GetLink("/")' class="logo">
+      <span class="title">@Context.GetString("SiteTitle")</span>
+    </a>
+
+    <!-- Nav -->
+    <nav>
+      <ul>
+        <li><a href="#menu">Menu</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Menu -->
+<nav id="menu">
+  <h2>Menu</h2>
+  <ul>
+    @Html.Partial("_navbar")
+    @if (Context.GetBool(WebKeys.GenerateSearchIndex))
+    {
+      <li><a href='@Context.GetLink("/search")'>Search</a></li>
+    }
+  </ul>
+</nav>
